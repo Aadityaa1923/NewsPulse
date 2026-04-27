@@ -10,63 +10,42 @@ class LoginData(BaseModel):
     username: str
     password: str
 
-
-@app.post("/login")
-def login(user: LoginData):
-
-    if user.username == "admin" and user.password == "1234":
-        return {
-            "status":"success",
-            "message":"Login successful",
-            "user":"Admin"
-        }
-
-    return {
-        "status":"error",
-        "message":"Invalid credentials"
-    }
-
-class LoginData(BaseModel):
-    username: str
-    password: str
-
-
-@app.post("/login")
-def login(user: LoginData):
-
-    if user.username == "admin" and user.password == "1234":
-        return {
-            "status":"success",
-            "message":"Login successful",
-            "user":"Admin"
-        }
-
-    return {
-        "status":"error",
-        "message":"Invalid credentials"
-    }
-
-    from typing import List
-
-# temporary in-memory storage for demo
-users_db = []
-
 class SignupData(BaseModel):
     name: str
     email: str
     password: str
     interests: list[str]
 
+users_db = []
+
+@app.post("/login")
+def login(user: LoginData):
+    if user.username == "admin" and user.password == "1234":
+        return {
+            "status": "success",
+            "message": "Login successful",
+            "user": "Admin"
+        }
+
+    for u in users_db:
+        if u["email"] == user.username and u["password"] == user.password:
+            return {
+                "status": "success",
+                "message": "Login successful"
+            }
+
+    return {
+        "status": "error",
+        "message": "Invalid credentials"
+    }
 
 @app.post("/signup")
 def signup(user: SignupData):
-
-    # check existing user
     for u in users_db:
         if u["email"] == user.email:
             return {
-                "status":"error",
-                "message":"Email already registered"
+                "status": "error",
+                "message": "Email already registered"
             }
 
     users_db.append({
@@ -74,31 +53,11 @@ def signup(user: SignupData):
         "email": user.email,
         "password": user.password,
         "interests": user.interests
-})
+    })
 
     return {
-        "status":"success",
-        "message":"Account created successfully"
-    }
-@app.post('/login')
-def login(user: LoginData):
-
-    if user.username == 'admin' and user.password == '1234':
-        return {
-            'status':'success',
-            'message':'Login successful'
-        }
-
-    for u in users_db:
-        if u["email"] == user.username and u["password"] == user.password:
-            return {
-                'status':'success',
-                'message':'Login successful'
-            }
-
-    return {
-        'status':'error',
-        'message':'Invalid credentials'
+        "status": "success",
+        "message": "Account created successfully"
     }
 app.add_middleware(
     CORSMiddleware,
