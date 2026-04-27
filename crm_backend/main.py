@@ -1,64 +1,36 @@
+import os
+from pathlib import Path
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 from textblob import TextBlob
-from pydantic import BaseModel
+
+
+def load_dotenv(path: str = ".env") -> None:
+    env_path = Path(path)
+    if not env_path.is_file():
+        return
+
+    for raw_line in env_path.read_text().splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#"):
+            continue
+
+        key, sep, value = line.partition("=")
+        if sep != "=":
+            continue
+
+        key = key.strip()
+        value = value.strip().strip('"').strip("'")
+        if key and value and key not in os.environ:
+            os.environ[key] = value
+
+
+load_dotenv()
 
 app = FastAPI()
 
-class LoginData(BaseModel):
-    username: str
-    password: str
-
-class SignupData(BaseModel):
-    name: str
-    email: str
-    password: str
-    interests: list[str]
-
-users_db = []
-
-@app.post("/login")
-def login(user: LoginData):
-    if user.username == "admin" and user.password == "1234":
-        return {
-            "status": "success",
-            "message": "Login successful",
-            "user": "Admin"
-        }
-
-    for u in users_db:
-        if u["email"] == user.username and u["password"] == user.password:
-            return {
-                "status": "success",
-                "message": "Login successful"
-            }
-
-    return {
-        "status": "error",
-        "message": "Invalid credentials"
-    }
-
-@app.post("/signup")
-def signup(user: SignupData):
-    for u in users_db:
-        if u["email"] == user.email:
-            return {
-                "status": "error",
-                "message": "Email already registered"
-            }
-
-    users_db.append({
-        "name": user.name,
-        "email": user.email,
-        "password": user.password,
-        "interests": user.interests
-    })
-
-    return {
-        "status": "success",
-        "message": "Account created successfully"
-    }
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -66,7 +38,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-API_KEY = "d9d860e0008e4e16a0932e57d4697c74"
+API_KEY = os.getenv("NEWSAPI_KEY")
+if not API_KEY:
+    raise RuntimeError("NEWSAPI_KEY must be set in environment or .env file")
+
 
 @app.get("/")
 def home():
