@@ -4,8 +4,5 @@
     "api/**/*.py": {
       "runtime": "python3.12"
     }
-  },
-  "build": {
-    "command": "pip install -r requirements-clean.txt"
   }
 }
