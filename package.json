@@ -1,0 +1,8 @@
+{
+  "name": "crm",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo This repository is a Python Flask project and does not require an npm build step."
+  }
+}

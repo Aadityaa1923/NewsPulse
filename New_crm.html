@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NewsPulse CRM Live Dashboard</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+:root{
+--lime:#a8f542;
+--dark:#0d1511;
+--card:#182219;
+--card2:#131d17;
+--text:#ffffff;
+--muted:#adb0aa;
+--red:#ff6b6b;
+--yellow:#ffc107;
+--green:#3da854;
+}
+
+body{
+font-family:'DM Sans',sans-serif;
+background:var(--dark);
+color:white;
+line-height:1.6;
+}
+
+nav{
+position:fixed;
+top:0;
+left:0;
+right:0;
+height:70px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:0 50px;
+background:rgba(13,21,17,.95);
+backdrop-filter:blur(15px);
+z-index:1000;
+border-bottom:1px solid rgba(168,245,66,.15);
+}
+
+.logo{
+font-family:Syne;
+font-size:28px;
+font-weight:800;
+color:var(--lime);
+}
+
+.hero{
+min-height:100vh;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+text-align:center;
+padding:120px 30px 60px;
+background:
+radial-gradient(circle at center,
+rgba(61,168,84,.25),transparent 60%);
+}
+
+.hero h1{
+font-family:Syne;
+font-size:clamp(42px,7vw,82px);
+font-weight:800;
+line-height:1.05;
+max-width:900px;
+}
+
+.hero span{
+color:var(--lime);
+}
+
+.hero p{
+max-width:700px;
+margin-top:25px;
+font-size:20px;
+color:var(--muted);
+}
+
+.btn{
+display:inline-block;
+margin-top:40px;
+padding:16px 35px;
+background:var(--lime);
+color:#000;
+text-decoration:none;
+font-weight:700;
+border-radius:999px;
+}
+
+section{
+padding:90px 50px;
+max-width:1300px;
+margin:auto;
+}
+
+.section-title{
+font-family:Syne;
+font-size:52px;
+margin-bottom:18px;
+}
+
+.section-sub{
+max-width:700px;
+color:var(--muted);
+margin-bottom:50px;
+}
+
+.dashboard{
+background:var(--card);
+border-radius:22px;
+overflow:hidden;
+border:1px solid rgba(255,255,255,.08);
+}
+
+.dash-header{
+padding:25px 35px;
+display:flex;
+justify-content:space-between;
+align-items:center;
+flex-wrap:wrap;
+gap:20px;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.dash-title{
+font-family:Syne;
+font-size:22px;
+}
+
+.live{
+color:var(--lime);
+font-size:14px;
+}
+
+.controls{
+display:flex;
+gap:10px;
+flex-wrap:wrap;
+}
+
+.controls button{
+padding:10px 18px;
+border-radius:999px;
+border:none;
+background:#243128;
+color:white;
+cursor:pointer;
+font-weight:600;
+}
+
+.controls button.active,
+.controls button:hover{
+background:var(--lime);
+color:black;
+}
+
+.metrics{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+gap:1px;
+background:#253128;
+}
+
+.metric{
+background:var(--card2);
+padding:28px;
+}
+
+.metric-label{
+color:var(--muted);
+font-size:14px;
+}
+
+.metric-value{
+font-size:38px;
+font-family:Syne;
+margin-top:8px;
+color:var(--lime);
+}
+
+.main-grid{
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:0;
+}
+
+.panel{
+padding:35px;
+}
+
+.panel:first-child{
+border-right:1px solid rgba(255,255,255,.07);
+}
+
+.panel-title{
+font-size:22px;
+font-family:Syne;
+margin-bottom:30px;
+}
+
+.sentiment-item{
+margin-bottom:22px;
+}
+
+.bar{
+height:8px;
+background:#27322a;
+border-radius:30px;
+overflow:hidden;
+margin-top:8px;
+}
+
+.fill{
+height:100%;
+border-radius:30px;
+}
+
+.news-feed{
+display:flex;
+flex-direction:column;
+gap:18px;
+}
+
+.news-item{
+background:#202b23;
+padding:22px;
+border-radius:16px;
+transition:.3s;
+}
+
+.news-item:hover{
+transform:translateY(-4px);
+}
+
+.news-headline{
+font-size:18px;
+font-weight:700;
+margin-bottom:12px;
+}
+
+.news-meta{
+font-size:13px;
+color:var(--muted);
+margin-bottom:12px;
+}
+
+.news-item p{
+color:#d0d0d0;
+margin-bottom:15px;
+}
+
+.news-item a{
+color:var(--lime);
+text-decoration:none;
+font-weight:600;
+}
+
+.loader{
+padding:30px;
+text-align:center;
+color:var(--lime);
+}
+
+.footer{
+padding:40px;
+text-align:center;
+color:var(--muted);
+}
+
+@media(max-width:900px){
+.main-grid{
+grid-template-columns:1fr;
+}
+
+.panel:first-child{
+border-right:none;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+nav{
+padding:0 20px;
+}
+
+section{
+padding:70px 20px;
+}
+}
+</style>
+</head>
+<body>
+
+<nav>
+<div class="logo">NewsPulse CRM</div>
+<div class="live">● Live Intelligence</div>
+</nav>
+
+<div class="hero">
+<h1>
+Turn <span>Live News</span><br>
+Into Customer Intelligence
+</h1>
+
+<p>
+Real-time geopolitical, finance, politics and sports news
+powering CRM analytics and sentiment monitoring.
+</p>
+
+<a href="#dashboard" class="btn">Launch Dashboard</a>
+</div>
+
+<section id="dashboard">
+<h2 class="section-title">Live News Intelligence Dashboard</h2>
+<p class="section-sub">
+Monitor real-time news streams across categories and use them
+for CRM sentiment analysis.
+</p>
+
+<div class="dashboard">
+
+<div class="dash-header">
+<div>
+<div class="dash-title">India & International News Feed</div>
+<div class="live">Updating every 60 seconds</div>
+</div>
+
+<div class="controls">
+<button onclick="switchCategory('all',this)" class="active">
+All News
+</button>
+
+<button onclick="switchCategory('politics',this)">
+Politics
+</button>
+
+<button onclick="switchCategory('geopolitics',this)">
+Geopolitics
+</button>
+
+<button onclick="switchCategory('sports',this)">
+Sports
+</button>
+
+<button onclick="switchCategory('economics',this)">
+Economics
+</button>
+
+<button onclick="switchCategory('finance',this)">
+Finance
+</button>
+</div>
+</div>
+
+<div class="metrics">
+<div class="metric">
+<div class="metric-label">Sentiment Score</div>
+<div class="metric-value" id="sentimentValue">+0.72</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">Articles Loaded</div>
+<div class="metric-value" id="articleCount">0</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">Risk Index</div>
+<div class="metric-value" id="riskIndex">Low</div>
+</div>
+
+<div class="metric">
+<div class="metric-label">Campaign Signal</div>
+<div class="metric-value" id="campaignSignal">High</div>
+</div>
+</div>
+
+<div class="main-grid">
+
+<div class="panel">
+<h3 class="panel-title">Sentiment Distribution</h3>
+
+<div class="sentiment-item">
+Positive 68%
+<div class="bar">
+<div class="fill" style="width:68%;background:#a8f542"></div>
+</div>
+</div>
+
+<div class="sentiment-item">
+Negative 21%
+<div class="bar">
+<div class="fill" style="width:21%;background:#ff6b6b"></div>
+</div>
+</div>
+
+<div class="sentiment-item">
+Neutral 11%
+<div class="bar">
+<div class="fill" style="width:11%;background:#ffc107"></div>
+</div>
+</div>
+
+<div class="sentiment-item">
+Geopolitical Risk 34%
+<div class="bar">
+<div class="fill" style="width:34%;background:#3da854"></div>
+</div>
+</div>
+
+</div>
+
+<div class="panel">
+<h3 class="panel-title">
+Live News Feed
+</h3>
+
+<div id="news-feed" class="news-feed">
+<div class="loader">Loading live news...</div>
+</div>
+
+</div>
+</div>
+</div>
+</section>
+
+<div class="footer">
+NewsPulse CRM • News Analysis Based CRM System
+</div>
+
+<script>
+const API_KEY="d9d860e0008e4e16a0932e57d4697c74";
+
+const categories={
+all:"general",
+international:"general",
+politics:"general",
+geopolitics:"general",
+sports:"sports",
+economics:"business",
+finance:"business"
+};
+
+let currentCategory="all";
+
+function updateMetrics(category){
+const metrics={
+all:["+0.66","Medium","Very High"],
+international:["+0.55","Medium","Strong"],
+politics:["+0.61","Medium","High"],
+geopolitics:["-0.34","High","Moderate"],
+sports:["+0.82","Low","Very High"],
+economics:["+0.48","Medium","High"],
+finance:["+0.74","Low","Very High"]
+};
+
+document.getElementById('sentimentValue').innerText=
+metrics[category][0];
+
+document.getElementById('riskIndex').innerText=
+metrics[category][1];
+
+document.getElementById('campaignSignal').innerText=
+metrics[category][2];
+}
+
+async function fetchNews(category){
+
+let query='';
+if(category==='all') query='India politics OR world news OR geopolitics OR sports OR economy OR markets';
+if(category==='politics') query='India politics OR parliament OR BJP OR Congress OR elections';
+if(category==='international') query='international relations OR world news OR diplomacy';
+
+if(category==='geopolitics')
+query='geopolitics OR war OR diplomacy';
+
+if(category==='finance')
+query='finance markets stocks';
+
+let url='';
+
+if(query!=''){
+url=`https://newsapi.org/v2/everything?q=${query}&language=en&pageSize=8&apiKey=${API_KEY}`;
+}
+else{
+url=`https://newsapi.org/v2/top-headlines?category=${categories[category]}&language=en&pageSize=8&apiKey=${API_KEY}`;
+}
+
+try{
+document.getElementById('news-feed').innerHTML=
+'<div class="loader">Loading live news...</div>';
+
+const res=await fetch(url);
+const data=await res.json();
+
+renderNews(data.articles||[]);
+updateMetrics(category);
+
+}
+catch(err){
+document.getElementById('news-feed').innerHTML=
+'<div class="loader">Error loading news</div>';
+console.log(err);
+}
+}
+
+function renderNews(articles){
+
+const feed=document.getElementById('news-feed');
+feed.innerHTML='';
+
+document.getElementById('articleCount').innerText=
+articles.length;
+
+if(!articles.length){
+feed.innerHTML='<div class="loader">No articles found</div>';
+return;
+}
+
+articles.forEach(article=>{
+
+const card=document.createElement('div');
+card.className='news-item';
+
+card.innerHTML=`
+<div class="news-headline">
+${article.title || 'No title'}
+</div>
+
+<div class="news-meta">
+${article.source?.name || 'News Source'} •
+${new Date(article.publishedAt).toLocaleString()}
+</div>
+
+<p>
+${article.description || 'No description available'}
+</p>
+
+<a href="${article.url}" target="_blank">
+Read Full Article →
+</a>
+`;
+
+feed.appendChild(card);
+
+});
+}
+
+function switchCategory(category,button){
+currentCategory=category;
+
+document.querySelectorAll('.controls button')
+.forEach(btn=>btn.classList.remove('active'));
+
+button.classList.add('active');
+
+fetchNews(category);
+}
+
+fetchNews('all');
+
+setInterval(function(){
+fetchNews(currentCategory);
+},60000);
+
+</script>
+
+</body>
+</html>
