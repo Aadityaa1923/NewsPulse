@@ -6,6 +6,6 @@
     }
   },
   "build": {
-    "installCommand": "pip install -r requirements-clean.txt"
+    "command": "pip install -r requirements-clean.txt"
   }
 }
