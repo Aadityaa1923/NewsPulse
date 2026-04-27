@@ -1,0 +1,8 @@
+[project]
+name = "news-pulse"
+version = "0.1.0"
+description = "FastAPI backend for NewsPulse"
+requires-python = ">=3.10"
+
+[project.scripts]
+app = "crm_backend.main:app"
